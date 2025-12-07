@@ -1,5 +1,3 @@
-// getDatoCmsToken.ts
-
 export const getDatoCmsToken = (): string => {
   const hostname = window.location.hostname;
   let token = '';
@@ -28,24 +26,20 @@ export const getDatoCmsToken = (): string => {
       break;
 
     default:
-      throw new Error(`No DatoCMS token configured for hostname: ${hostname}`);
+      // Use the localhost ROR token as default
+      token = process.env.REACT_APP_DATOCMS_ROR_TOKEN ?? '';
+      console.warn(`⚠️ Hostname "${hostname}" not recognized. Using default localhost token.`);
+      break;
   }
 
   if (!token) {
-    let envVarName = 'REACT_APP_DATOCMS_ROR_TOKEN';
-    if (hostname.includes('java')) envVarName = 'REACT_APP_DATOCMS_JAVA_TOKEN';
-    else if (hostname.includes('frontend')) envVarName = 'REACT_APP_DATOCMS_FRONTEND_TOKEN';
-    else if (hostname.includes('node')) envVarName = 'REACT_APP_DATOCMS_NODE_TOKEN';
-    
     console.error('❌ DatoCMS API Token Missing!');
     console.error(`   Hostname: ${hostname}`);
-    console.error(`   Expected env variable: ${envVarName}`);
+    console.error('   Expected a valid env variable for this hostname.');
     console.error('   📖 See GET_API_TOKEN.md for instructions on how to get your token');
-    throw new Error(
-      `DatoCMS API token is missing! Add ${envVarName} to your .env file. ` +
-      `See GET_API_TOKEN.md for instructions.`
-    );
+    throw new Error(`DatoCMS API token is missing! Add the correct env variable to your .env file.`);
   }
 
   return token;
 };
+
